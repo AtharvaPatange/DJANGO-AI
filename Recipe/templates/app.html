@@ -1,0 +1,28 @@
+<!-- ai_recipe_app/templates/ai_recipe_app/ats_home.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Recipe Builder</title>
+</head>
+<body>
+    <h1>AI Recipe Builder</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" name="submit_recipe">Tell me the recipe</button>
+        <button type="submit" name="submit_general">Submit General Input</button>
+    </form>
+
+    {% if recipe_response %}
+        <h2>The Recipe is:</h2>
+        <p>{{ recipe_response }}</p>
+    {% endif %}
+
+    {% if general_response %}
+        <h2>Response to General Input:</h2>
+        <p>{{ general_response }}</p>
+    {% endif %}
+</body>
+</html>

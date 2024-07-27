@@ -1,1 +1,3 @@
-hi
+google-generativeai
+Pillow 
+django-environ
