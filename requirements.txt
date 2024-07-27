@@ -4,3 +4,8 @@ django-environ
 django
 python-dotenv
 dj-database-url
+django-database-url
+gunicorn
+sqlparse
+psycopg2
+asgiref
