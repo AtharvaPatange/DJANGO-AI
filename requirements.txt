@@ -1,3 +1,6 @@
 google-generativeai
 Pillow 
 django-environ
+django
+python-dotenv
+dj-database-url

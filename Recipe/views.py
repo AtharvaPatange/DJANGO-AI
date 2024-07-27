@@ -82,9 +82,6 @@
 #     return render(request, 'app.html', {'form': form})
 
 
-import base64
-from io import BytesIO
-from PIL import Image
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
