@@ -134,3 +134,8 @@ GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
 # environ.Env.read_env()
 
 # GOOGLE_API_KEY = env('Gemini_API_KEY')
+
+import os
+
+ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', 'localhost').split(',')
+
