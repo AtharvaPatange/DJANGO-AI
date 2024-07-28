@@ -90,11 +90,11 @@ from django.conf import settings
 
 # Configure Google Generative AI
 genai.configure(api_key=settings.GOOGLE_API_KEY)
-model = genai.GenerativeModel("gemini-1.5-flash")
+model = genai.GenerativeModel("gemini-pro-vision")
 
 def get_gemini_response(input_prompt, image_str):
     if input_prompt:
-        response = model.generate_content([input_prompt, image_str])
+        response = model.generate_content([input_prompt])
     else:
         response = model.generate_content(image_str)
     return response.text
