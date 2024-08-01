@@ -24,5 +24,13 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('Recipe.urls')),
 ]
+from django.urls import path
+from Recipe.views import ats_home,chat_with_gemini
+
+urlpatterns = [
+    # path('', index, name='index'),
+    path('ats_home/', ats_home, name='ats_home'),
+    path('chat/', chat_with_gemini ,name='chat')
+]
 
 urlpatterns+= staticfiles_urlpatterns()

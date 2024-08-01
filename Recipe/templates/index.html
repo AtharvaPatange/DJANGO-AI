@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Content Generator</title>
+</head>
+<body>
+    <h1>AI Content Generator</h1>
+    <form id="contentForm">
+        <label for="inputPrompt">Input Prompt:</label>
+        <input type="text" id="inputPrompt" name="input_prompt"><br><br>
+        
+        <label for="imageFile">Upload Image:</label>
+        <input type="file" id="imageFile" name="image_file"><br><br>
+        
+        <label for="imageURL">Image URL:</label>
+        <input type="text" id="imageURL" name="image_url"><br><br>
+        
+        <button type="button" onclick="submitForm()">Generate Content</button>
+    </form>
+    <h2>Response:</h2>
+    <p id="responseText"></p>
+    <script>
+        async function submitForm() {
+            const form = document.getElementById('contentForm');
+            const formData = new FormData(form);
+
+            const data = {
+                input_prompt: formData.get('input_prompt'),
+                image_url: formData.get('image_url')
+            };
+
+            const fileInput = document.getElementById('imageFile');
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = function () {
+                    const base64Image = reader.result.split(',')[1];
+                    data.image_base64 = base64Image;
+                    sendRequest(data);
+                };
+            } else {
+                sendRequest(data);
+            }
+        }
+
+        async function sendRequest(data) {
+            const response = await fetch('/ats_home/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+
+            const result = await response.json();
+            document.getElementById('responseText').innerText = result.response || result.error;
+        }
+    </script>
+</body>
+</html>
+<!-- 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image and Text Prompt</title>
+</head>
+<body>
+    <h1>Submit Your Prompt and Image</h1>
+    <form id="promptForm">
+        <label for="inputPrompt">Input Prompt:</label>
+        <input type="text" id="inputPrompt" name="inputPrompt"><br><br>
+
+        <label for="imageURL">Image URL:</label>
+        <input type="text" id="imageURL" name="imageURL"><br><br>
+
+        <label for="imageFile">Or Upload Image File:</label>
+        <input type="file" id="imageFile" name="imageFile"><br><br>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <div id="responseContainer"></div>
+
+    <script>
+        document.getElementById('promptForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const inputPrompt = document.getElementById('inputPrompt').value;
+            const imageURL = document.getElementById('imageURL').value;
+            const imageFile = document.getElementById('imageFile').files[0];
+
+            let imageBase64 = "";
+
+            if (imageFile) {
+                const reader = new FileReader();
+                reader.onloadend = function() {
+                    imageBase64 = reader.result.split(',')[1];  // Remove the base64 prefix
+                    sendRequest(inputPrompt, imageURL, imageBase64);
+                };
+                reader.readAsDataURL(imageFile);
+            } else {
+                sendRequest(inputPrompt, imageURL, imageBase64);
+            }
+        });
+
+        async function sendRequest(inputPrompt, imageURL, imageBase64) {
+            const data = {
+                input_prompt: inputPrompt,
+                image_url: imageURL,
+                image_base64: imageBase64
+            };
+
+            try {
+                const response = await fetch('/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const jsonResponse = await response.json();
+                document.getElementById('responseContainer').textContent = jsonResponse.response || jsonResponse.error;
+            } catch (error) {
+                console.error('There was a problem with the fetch operation:', error);
+                document.getElementById('responseContainer').textContent = 'An error occurred while processing the request.';
+            }
+        }
+    </script>
+</body>
+</html> -->

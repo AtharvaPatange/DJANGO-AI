@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-gz-styp5w535!!j12x)bm*+4z4+t(7rvm9x(u3dsy_354e!2-a
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["django-ai-8.onrender.com",'django-ai-9.onrender.com']
+ALLOWED_HOSTS = ["django-ai-8.onrender.com",'django-ai-9.onrender.com',"127.0.0.1"]
 
 
 
@@ -59,7 +59,7 @@ ROOT_URLCONF = 'AI.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -128,6 +128,14 @@ USE_TZ = True
 STATIC_URL = 'static/'
 MEDIA_URL = 'media/'
 
+# For static files
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'Recipe/static'),
+    BASE_DIR,"static"
+]
+
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
@@ -146,4 +154,23 @@ GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
 
 import os
 
+import logging
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'debug.log',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
