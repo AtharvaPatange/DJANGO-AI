@@ -293,6 +293,15 @@ def gemini(request):
         return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 # ###recipe
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+import json
+import logging
+import requests
+import base64
+# from genai import GenerativeModel
+
+logger = logging.getLogger(__name__)
 
 @csrf_exempt
 def image(request):
@@ -305,49 +314,75 @@ def image(request):
             if 'conversation' not in request.session:
                 request.session['conversation'] = []
                 logger.debug("Initialized conversation in session")
-            
-            messages = request.session['conversation']
-            logger.debug(f"Conversation history (roles): {[message['role'] for message in messages]}")
 
-            # Extract user message and image string
+            messages = request.session['conversation']
+            logger.debug(f"Conversation history: {messages}")
+
+            # Extract user message, image URL, and session ID
             user_message = data.get('prompt', '')
-            image_str = data.get('image_str', '')
+            image_url = data.get('image_url', '')
+            session_id = data.get('session_id', '')
 
-            if not user_message and not image_str:
-                return JsonResponse({'error': 'Prompt or image_str is required'}, status=400)
-            logger.debug(f"User message: {user_message}, Image string: {image_str}")
+            if not user_message and not image_url:
+                return JsonResponse({'error': 'Prompt or image_url is required'}, status=400)
+            logger.debug(f"User message: {user_message}, Image URL: {image_url}")
 
-            # Recipe prompt
-            # Input Prompt
-            recipe_prompt = '''
-                Hello! You will be  provided  with some input and image of food. Based on this information, you will assist the user
-                you are like a shef or cooking assistance you have to analyxe the image and assist the user in making the recipe but kindly remeber you have to tell user when he asks means promt is provided
-                you have to reply youa re able to know what prompt is provided to you so just dont tell whole recipe tell one by one step by step means first tell initial step ansd the user will ask somthing then tell next step and aask user if any difficulty is there and once all recipe is completed tell the user recipe is done
-                '''
+            # Handle image upload and prompt
+            model = genai.GenerativeModel(model_name="gemini-1.5-flash")
 
+            # Fetch and process the image
+            image = None
+            if image_url:
+                try:
+                    response = requests.get(image_url)
+                    response.raise_for_status()  # Check if the request was successful
+                    image_data = response.content
+                    # Encode image data to base64
+                    encoded_image = base64.b64encode(image_data).decode('utf-8')
+                    image = {
+                        'data': encoded_image,
+                        'mime_type': response.headers['content-type'],
+                    }
+                except requests.RequestException as e:
+                    logger.error(f"Error fetching image: {str(e)}")
+                    return JsonResponse({'error': 'Error fetching image'}, status=400)
 
-            # Combine recipe prompt with user message and image string
-            combined_prompt = f"{recipe_prompt}\n\n{user_message}\n\n{image_str}"
-            if image_str:
-                combined_prompt += f"\n\nImage Analysis:\n{image_str}"
+            # Prepare the content for the model
+            parts = []
+            if image:
+                parts.append({'inline_data': image})
+            if user_message:
+                parts.append({'text': user_message})
 
-            # Append combined message to conversation history
-            request.session['conversation'].append({'role': 'user', 'content': combined_prompt})
-            messages = request.session['conversation']
-            logger.debug(f"Conversation history: {messages}")  # Print the conversation list
+            # Include conversation history in the model input
+            conversation_parts = []
+            for message in messages:
+                if message['role'] == 'user':
+                    conversation_parts.append({'text': message['content']})
+                elif message['role'] == 'model':
+                    conversation_parts.append({'text': message['content']})
 
-            # Get Gemini response
-            gemini_reply = get_gemini_response(messages)
+            # Combine conversation parts with current parts
+            conversation_parts.extend(parts)
+            result = model.generate_content({'parts': conversation_parts})
+
+            # Access the generated content correctly
+            gemini_reply = result.text  # Adjusted to the correct attribute or method
+
             logger.debug(f"Gemini reply: {gemini_reply}")
 
-            # Append Gemini response to conversation history
+            # Append user message and Gemini response to conversation history
+            if user_message:
+                request.session['conversation'].append({'role': 'user', 'content': user_message})
+            if image:
+                request.session['conversation'].append({'role': 'user', 'content': '[Image uploaded]'})
             request.session['conversation'].append({'role': 'model', 'content': gemini_reply})
 
             # Save session changes
             request.session.modified = True
 
             # Return Gemini response to client
-            return JsonResponse({'reply': gemini_reply}, status=200)
+            return JsonResponse({'response': gemini_reply}, status=200)
 
         except json.JSONDecodeError:
             logger.error("Invalid JSON received")
@@ -360,8 +395,6 @@ def image(request):
             return JsonResponse({'error': 'Internal Server Error'}, status=500)
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=405)
-    
-
 
 @csrf_exempt
 def diet(request):
