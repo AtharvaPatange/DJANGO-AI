@@ -291,8 +291,6 @@ def gemini(request):
             return JsonResponse({'error': 'Internal Server Error'}, status=500)
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=405)
-
-# ###recipe
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 import json
@@ -300,6 +298,58 @@ import logging
 import requests
 import base64
 # from genai import GenerativeModel
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+import json
+import logging
+import requests
+import base64
+# from genai import GenerativeModel
+
+logger = logging.getLogger(__name__)
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from django.contrib.sessions.backends.db import SessionStore
+import json
+import logging
+import requests
+import base64
+# from genai import GenerativeModel
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from django.contrib.sessions.backends.db import SessionStore
+import json
+import logging
+import requests
+import base64
+# from genai import GenerativeModel
+
+logger = logging.getLogger(__name__)
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from django.contrib.sessions.backends.db import SessionStore
+import json
+import logging
+import requests
+import base64
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from django.contrib.sessions.backends.db import SessionStore
+import json
+import logging
+import requests
+import base64
+
+
+logger = logging.getLogger(__name__)
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from django.contrib.sessions.backends.db import SessionStore
+import json
+import logging
+import requests
+import base64
+
 
 logger = logging.getLogger(__name__)
 
@@ -310,18 +360,34 @@ def image(request):
             data = json.loads(request.body)
             logger.debug(f"Received request data: {data}")
 
+            # Extract session ID from the request
+            session_id = data.get('session_id', '')
+
+            if not session_id:
+                return JsonResponse({'error': 'Session ID is required'}, status=400)
+
+            # Use Django's session framework with the provided session ID
+            session = SessionStore(session_key=session_id)
+
+            # Check if the session exists, if not, create it
+            if not session.exists(session.session_key):
+                session.create()
+                session_id = session.session_key
+                logger.debug(f"Created new session with session_id: {session_id}")
+            else:
+                logger.debug(f"Using existing session with session_id: {session_id}")
+
             # Initialize conversation if not in session
-            if 'conversation' not in request.session:
-                request.session['conversation'] = []
-                logger.debug("Initialized conversation in session")
+            if 'conversation' not in session:
+                session['conversation'] = []
+                logger.debug(f"Initialized conversation for session key: {session.session_key}")
 
-            messages = request.session['conversation']
-            logger.debug(f"Conversation history: {messages}")
+            messages = session['conversation']
+            logger.debug(f"Conversation history for session {session.session_key}: {messages}")
 
-            # Extract user message, image URL, and session ID
+            # Extract user message and image URL
             user_message = data.get('prompt', '')
             image_url = data.get('image_url', '')
-            session_id = data.get('session_id', '')
 
             if not user_message and not image_url:
                 return JsonResponse({'error': 'Prompt or image_url is required'}, status=400)
@@ -355,12 +421,7 @@ def image(request):
                 parts.append({'text': user_message})
 
             # Include conversation history in the model input
-            conversation_parts = []
-            for message in messages:
-                if message['role'] == 'user':
-                    conversation_parts.append({'text': message['content']})
-                elif message['role'] == 'model':
-                    conversation_parts.append({'text': message['content']})
+            conversation_parts = [{'text': message['content']} for message in messages]
 
             # Combine conversation parts with current parts
             conversation_parts.extend(parts)
@@ -373,16 +434,16 @@ def image(request):
 
             # Append user message and Gemini response to conversation history
             if user_message:
-                request.session['conversation'].append({'role': 'user', 'content': user_message})
+                session['conversation'].append({'role': 'user', 'content': user_message})
             if image:
-                request.session['conversation'].append({'role': 'user', 'content': '[Image uploaded]'})
-            request.session['conversation'].append({'role': 'model', 'content': gemini_reply})
+                session['conversation'].append({'role': 'user', 'content': '[Image uploaded]'})
+            session['conversation'].append({'role': 'model', 'content': gemini_reply})
 
             # Save session changes
-            request.session.modified = True
+            session.save()
 
             # Return Gemini response to client
-            return JsonResponse({'response': gemini_reply}, status=200)
+            return JsonResponse({'response': gemini_reply, 'session_id': session_id}, status=200)
 
         except json.JSONDecodeError:
             logger.error("Invalid JSON received")
@@ -395,6 +456,7 @@ def image(request):
             return JsonResponse({'error': 'Internal Server Error'}, status=500)
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=405)
+
 
 @csrf_exempt
 def diet(request):
