@@ -25,13 +25,19 @@ urlpatterns = [
     path('', include('Recipe.urls')),
 ]
 from django.urls import path
-from Recipe.views import gemini,image,diet
+from Recipe.views import gemini,image,diet,index,process_files,process_request,NJDGDataView
 
 urlpatterns = [
     # path('', index, name='index'),
     path('text/', gemini, name='ats_home'),
     path('image/', image ,name='chat'),
-    path('diet/', diet ,name='chat')
+    path('diet/', diet ,name='chat'),
+    path('index/', index , name='index'),
+    path('process-files/', process_files, name='process_files'),
+    path('AI/',process_request,name='AI'),
+     path('njdg/', NJDGDataView.as_view(), name='njdg-data'),
 ]
+
+
 
 urlpatterns+= staticfiles_urlpatterns()

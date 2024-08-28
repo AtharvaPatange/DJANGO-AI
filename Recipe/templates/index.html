@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -61,7 +61,7 @@
     </script>
 </body>
 </html>
-<!-- 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -137,4 +137,91 @@
         }
     </script>
 </body>
-</html> -->
+</html> --> 
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>High Court Scene</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Create the scene
+        const scene = new THREE.Scene();
+
+        // Set up the camera
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 20, 50);
+
+        // Create the renderer
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Add a ground plane
+        const groundGeometry = new THREE.PlaneGeometry(100, 100);
+        const groundMaterial = new THREE.MeshBasicMaterial({ color: 0x8B4513 });
+        const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+        ground.rotation.x = -Math.PI / 2;
+        scene.add(ground);
+
+        // Function to create a building
+        function createBuilding(width, height, depth, color, position) {
+            const geometry = new THREE.BoxGeometry(width, height, depth);
+            const material = new THREE.MeshBasicMaterial({ color: color });
+            const building = new THREE.Mesh(geometry, material);
+            building.position.set(position.x, position.y, position.z);
+            return building;
+        }
+
+        // Create court buildings
+        const building1 = createBuilding(10, 20, 10, 0xAAAAAA, {x: -30, y: 10, z: 0});
+        scene.add(building1);
+
+        const building2 = createBuilding(15, 25, 15, 0xAAAAAA, {x: 0, y: 12.5, z: 0});
+        scene.add(building2);
+
+        const building3 = createBuilding(10, 30, 10, 0xAAAAAA, {x: 30, y: 15, z: 0});
+        scene.add(building3);
+
+        // Create a car
+        const carGeometry = new THREE.BoxGeometry(4, 2, 2);
+        const carMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+        const car = new THREE.Mesh(carGeometry, carMaterial);
+        car.position.set(-30, 1, 10);
+        scene.add(car);
+
+        // Basic animation to move the car between the buildings
+        let step = 0.1;
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Move the car
+            if (car.position.x < -30) {
+                step = 0.1;
+            } else if (car.position.x > 30) {
+                step = -0.1;
+            }
+            car.position.x += step;
+
+            renderer.render(scene, camera);
+        }
+
+        // Add a simple background texture (representing a historical background)
+        const loader = new THREE.TextureLoader();
+        loader.load('https://th.bing.com/th/id/OIP.RZuLH930csnGJdeHsDi8NQHaEo?w=256&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7', function(texture) {
+            scene.background = texture;
+        });
+
+        animate();
+    </script>
+</body>
+</html>
+

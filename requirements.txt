@@ -9,3 +9,9 @@ gunicorn
 sqlparse
 psycopg2
 asgiref
+langchain
+PyPDF2
+chromadb
+faiss-cpu
+langchain_google_genai
+langchain-community
