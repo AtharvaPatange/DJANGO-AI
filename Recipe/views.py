@@ -665,83 +665,83 @@ def index(request):
 
 
 
-import json
-import requests
-import PyPDF2
-import docx
-from PIL import Image
-import io
-from django.shortcuts import render
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.core.files.storage import default_storage
-from django.conf import settings
+# import json
+# import requests
+# import PyPDF2
+# import docx
+# from PIL import Image
+# import io
+# from django.shortcuts import render
+# from django.http import JsonResponse
+# from django.views.decorators.csrf import csrf_exempt
+# from django.core.files.storage import default_storage
+# from django.conf import settings
 
-# Function to simulate file upload by reading files from the disk
-def programmatically_upload_files(file_paths):
-    uploaded_files = []
-    for file_path in file_paths:
-        with open(file_path, "rb") as f:
-            pdf_bytes = f.read()
-            file_obj = io.BytesIO(pdf_bytes)
-            file_obj.name = file_path  # Set the name attribute manually
-            uploaded_files.append(file_obj)
-    return uploaded_files
+# # Function to simulate file upload by reading files from the disk
+# def programmatically_upload_files(file_paths):
+#     uploaded_files = []
+#     for file_path in file_paths:
+#         with open(file_path, "rb") as f:
+#             pdf_bytes = f.read()
+#             file_obj = io.BytesIO(pdf_bytes)
+#             file_obj.name = file_path  # Set the name attribute manually
+#             uploaded_files.append(file_obj)
+#     return uploaded_files
 
-# Function to extract text from PDFs
-def extract_text_from_pdfs(pdf_files):
-    combined_text = ""
-    for pdf_file in pdf_files:
-        try:
-            reader = PyPDF2.PdfReader(pdf_file)
-            text = ""
-            for page_num in range(len(reader.pages)):
-                page = reader.pages[page_num]
-                text += page.extract_text()
-            combined_text += text + "\n"
-        except Exception as e:
-            return f"Failed to read PDF file: {e}"
-    return combined_text
+# # Function to extract text from PDFs
+# def extract_text_from_pdfs(pdf_files):
+#     combined_text = ""
+#     for pdf_file in pdf_files:
+#         try:
+#             reader = PyPDF2.PdfReader(pdf_file)
+#             text = ""
+#             for page_num in range(len(reader.pages)):
+#                 page = reader.pages[page_num]
+#                 text += page.extract_text()
+#             combined_text += text + "\n"
+#         except Exception as e:
+#             return f"Failed to read PDF file: {e}"
+#     return combined_text
 
-# Function to extract text from DOCX files
-def extract_text_from_docx(docx_files):
-    combined_text = ""
-    for docx_file in docx_files:
-        try:
-            doc = docx.Document(docx_file)
-            text = "\n".join([para.text for para in doc.paragraphs])
-            combined_text += text + "\n"
-        except Exception as e:
-            return f"Failed to read DOCX file: {e}"
-    return combined_text
+# # Function to extract text from DOCX files
+# def extract_text_from_docx(docx_files):
+#     combined_text = ""
+#     for docx_file in docx_files:
+#         try:
+#             doc = docx.Document(docx_file)
+#             text = "\n".join([para.text for para in doc.paragraphs])
+#             combined_text += text + "\n"
+#         except Exception as e:
+#             return f"Failed to read DOCX file: {e}"
+#     return combined_text
 
-# Function to process image files (e.g., PNG, JPG)
-def process_images(image_files):
-    image_texts = []
-    for image_file in image_files:
-        try:
-            img = Image.open(image_file)
-            image_texts.append(f"Image file: {image_file.name}")
-        except Exception as e:
-            return f"Failed to process image: {e}"
-    return "\n".join(image_texts)
+# # Function to process image files (e.g., PNG, JPG)
+# def process_images(image_files):
+#     image_texts = []
+#     for image_file in image_files:
+#         try:
+#             img = Image.open(image_file)
+#             image_texts.append(f"Image file: {image_file.name}")
+#         except Exception as e:
+#             return f"Failed to process image: {e}"
+#     return "\n".join(image_texts)
 
-# Function to handle API requests
-def call_api(data):
-    api_url = "https://llama-1.onrender.com/history"
+# # Function to handle API requests
+# def call_api(data):
+#     api_url = "https://llama-1.onrender.com/history"
 
-    # Construct the JSON payload
-    payload = {
-        "username": "siddharamsutar23@gmail.com",
-        "prompt": data["content"]
-    }
+#     # Construct the JSON payload
+#     payload = {
+#         "username": "siddharamsutar23@gmail.com",
+#         "prompt": data["content"]
+#     }
     
-    response = requests.post(api_url, json=payload)
+#     response = requests.post(api_url, json=payload)
     
-    if response.status_code == 200:
-        return response.json()
-    else:
-        return {"error": f"API request failed with status code {response.status_code}."}
+#     if response.status_code == 200:
+#         return response.json()
+#     else:
+#         return {"error": f"API request failed with status code {response.status_code}."}
 
 # Main view to handle the file processing and API request
 # @csrf_exempt
@@ -862,77 +862,77 @@ def call_api(data):
 
 
 
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.contrib.sessions.models import Session
-from django.contrib.sessions.backends.db import SessionStore
-import json
+# from django.http import JsonResponse
+# from django.views.decorators.csrf import csrf_exempt
+# from django.contrib.sessions.models import Session
+# from django.contrib.sessions.backends.db import SessionStore
+# import json
 
-@csrf_exempt
-def process_files(request):
-    if request.method == 'POST':
-        try:
-            input_json = json.loads(request.body.decode('utf-8'))
-            prompt = input_json.get("prompt", "")
-            session_id = input_json.get("session_id", "")
+# @csrf_exempt
+# def process_files(request):
+#     if request.method == 'POST':
+#         try:
+#             input_json = json.loads(request.body.decode('utf-8'))
+#             prompt = input_json.get("prompt", "")
+#             session_id = input_json.get("session_id", "")
             
-            if prompt and session_id:
-                # Use session ID to retrieve or create a session
-                session = request.session
-                session['session_id'] = session_id
+#             if prompt and session_id:
+#                 # Use session ID to retrieve or create a session
+#                 session = request.session
+#                 session['session_id'] = session_id
 
-                # Programmatically upload files
-                file_paths = [
-                    "C:/Users/HP/Downloads/Doj1_merged.pdf",
-                ]
-                files = programmatically_upload_files(file_paths)
+#                 # Programmatically upload files
+#                 file_paths = [
+#                     "C:/Users/HP/Downloads/Doj1_merged.pdf",
+#                 ]
+#                 files = programmatically_upload_files(file_paths)
 
-                combined_text = ""
+#                 combined_text = ""
 
-                # Process PDF files
-                pdf_files = [f for f in files if f.name.endswith('.pdf')]
-                if pdf_files:
-                    pdf_text = extract_text_from_pdfs(pdf_files)
-                    combined_text += pdf_text[:5000]  # Optionally limit the text size
+#                 # Process PDF files
+#                 pdf_files = [f for f in files if f.name.endswith('.pdf')]
+#                 if pdf_files:
+#                     pdf_text = extract_text_from_pdfs(pdf_files)
+#                     combined_text += pdf_text[:5000]  # Optionally limit the text size
 
-                # Process DOCX files
-                docx_files = [f for f in files if f.name.endswith('.docx')]
-                if docx_files:
-                    docx_text = extract_text_from_docx(docx_files)
-                    combined_text += docx_text[:5000]
+#                 # Process DOCX files
+#                 docx_files = [f for f in files if f.name.endswith('.docx')]
+#                 if docx_files:
+#                     docx_text = extract_text_from_docx(docx_files)
+#                     combined_text += docx_text[:5000]
 
-                # Process Image files
-                image_files = [f for f in files if f.name.lower().endswith(('.png', '.jpg', '.jpeg'))]
-                if image_files:
-                    image_text = process_images(image_files)
-                    combined_text += image_text[:5000]
+#                 # Process Image files
+#                 image_files = [f for f in files if f.name.lower().endswith(('.png', '.jpg', '.jpeg'))]
+#                 if image_files:
+#                     image_text = process_images(image_files)
+#                     combined_text += image_text[:5000]
 
-                if combined_text:
-                    # Store combined_text in session
-                    session['combined_text'] = combined_text
-                    session.save()
+#                 if combined_text:
+#                     # Store combined_text in session
+#                     session['combined_text'] = combined_text
+#                     session.save()
 
-                    # Use the stored text along with the prompt for the API call
-                    full_prompt = f"{prompt}\n\n{combined_text}"
-                    data = {"content": full_prompt}
+#                     # Use the stored text along with the prompt for the API call
+#                     full_prompt = f"{prompt}\n\n{combined_text}"
+#                     data = {"content": full_prompt}
 
-                    # Call the API with the combined content
-                    api_response = call_api(data)
+#                     # Call the API with the combined content
+#                     api_response = call_api(data)
 
-                    # Handle potential API errors
-                    if 'error' in api_response:
-                        return JsonResponse({"error": f"API error: {api_response['error']}"})
+#                     # Handle potential API errors
+#                     if 'error' in api_response:
+#                         return JsonResponse({"error": f"API error: {api_response['error']}"})
 
-                    return JsonResponse(api_response)
-                else:
-                    return JsonResponse({"error": "No valid content to process."})
-            else:
-                return JsonResponse({"error": "Invalid JSON input. Please provide 'prompt' and 'session_id'."})
-        except json.JSONDecodeError:
-            return JsonResponse({"error": "Failed to parse JSON input."})
-        except Exception as e:
-            return JsonResponse({"error": f"Internal server error: {str(e)}"})
-    return JsonResponse({"error": "Invalid request method."})
+#                     return JsonResponse(api_response)
+#                 else:
+#                     return JsonResponse({"error": "No valid content to process."})
+#             else:
+#                 return JsonResponse({"error": "Invalid JSON input. Please provide 'prompt' and 'session_id'."})
+#         except json.JSONDecodeError:
+#             return JsonResponse({"error": "Failed to parse JSON input."})
+#         except Exception as e:
+#             return JsonResponse({"error": f"Internal server error: {str(e)}"})
+#     return JsonResponse({"error": "Invalid request method."})
 
 
 # import json
@@ -1130,59 +1130,3 @@ def process_request(request):
     
     return JsonResponse({"error": "Invalid request method."}, status=405)
 
-
-import requests
-from django.http import JsonResponse
-from rest_framework.views import APIView
-
-class NJDGDataView(APIView):
-    def get(self, request, *args, **kwargs):
-        # Example external API endpoint (replace with real endpoint)
-        external_api_url = "https://njdg.ecourts.gov.in/scnjdg/"
-        
-        # Example of passing query parameters
-        params = {
-            'case_id': request.GET.get('case_id')
-        }
-        
-        try:
-            response = requests.get(external_api_url, params=params)
-            response.raise_for_status()  # Raise an error for bad responses
-            data = response.json()  # Assuming the API returns JSON
-            return JsonResponse(data, safe=False)
-        except requests.exceptions.RequestException as e:
-            return JsonResponse({'error': str(e)}, status=500)
-
-class EfilingDataView(APIView):
-    def get(self, request, *args, **kwargs):
-        # Example external API endpoint (replace with real endpoint)
-        external_api_url = "https://efiling.gov.in/api/v1/filing-status"
-        
-        params = {
-            'filing_id': request.GET.get('filing_id')
-        }
-        
-        try:
-            response = requests.get(external_api_url, params=params)
-            response.raise_for_status()
-            data = response.json()
-            return JsonResponse(data, safe=False)
-        except requests.exceptions.RequestException as e:
-            return JsonResponse({'error': str(e)}, status=500)
-
-class CourtStreamingView(APIView):
-    def get(self, request, *args, **kwargs):
-        # Example external API endpoint (replace with real endpoint)
-        external_api_url = "https://courtstreaming.gov.in/api/v1/stream-status"
-        
-        params = {
-            'stream_id': request.GET.get('stream_id')
-        }
-        
-        try:
-            response = requests.get(external_api_url, params=params)
-            response.raise_for_status()
-            data = response.json()
-            return JsonResponse(data, safe=False)
-        except requests.exceptions.RequestException as e:
-            return JsonResponse({'error': str(e)}, status=500)
