@@ -1092,15 +1092,28 @@ def process_request(request):
             # Programmatically define the file paths
             file_paths = [
                 
-                "C:/Users/HP/Downloads/Vacancy.pdf",
-                 "C:/Users/HP/Downloads/sodapdf-converted (10).pdf",
-                 "C:/Users/HP/Downloads/Doj1_merged.pdf",
-                 "C:/Users/HP/Downloads/sodapdf-converted (8).pdf",
-                 "C:/Users/HP/Downloads/Tele Law.pdf",
-                 "C:/Users/HP/Downloads/alldataofdojinpdf.pdf",
-                 "C:/Users/HP/Downloads/sodapdf-converted (5).pdf",
-                 "C:/Users/HP/Downloads/sodapdf-converted (3).pdf",
-                 "C:/Users/HP/Downloads/FAST Track Special Court.pdf",
+                "Recipe/static/Vacancy.pdf",
+                 "Recipe/static/sodapdf-converted (10).pdf",
+                 "Recipe/static/Doj1_merged.pdf",
+                 "Recipe/static/sodapdf-converted (8).pdf",
+                 "Recipe/static/Tele Law.pdf",
+                 "Recipe/static/alldataofdojinpdf.pdf",
+                 "Recipe/static/sodapdf-converted (5).pdf",
+                 "Recipe/static/sodapdf-converted (3).pdf",
+                 "Recipe/static/FAST Track Special Court.pdf",
+                 "Recipe/static/rule1961.pdf",
+                 "Recipe/static/JUDGES.PDF",
+                 "Recipe/static/Higher Higher judges.pdf",
+                 "Recipe/static/high-courtstate-name.pdf",
+                 "Recipe/static/high-courts.pdf",
+                 "Recipe/static/High Court Vacancy.pdf",
+                 "Recipe/static/BOMBAY.pdf",
+                 "Recipe/static/ANDHRA.pdf",
+                 "Recipe/static/Doj1.pdf",
+                 "Recipe/static/alldataofdojinpdf.pdf",
+                 "Recipe/static/ALAHABAD High Court.pdf",
+                 "Recipe/static/Supreme Court Vacancy.pdf",
+
             ]
 
             # Extract text from the PDFs
