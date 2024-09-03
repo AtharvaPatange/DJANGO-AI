@@ -26,9 +26,11 @@ urlpatterns = [
 ]
 from django.urls import path
 from Recipe.views import gemini,image,diet,index,process_request
+from django.views.generic import TemplateView
 
 urlpatterns = [
     # path('', index, name='index'),
+    path('', TemplateView.as_view(template_name='index.html'), name='home'),
     path('text/', gemini, name='ats_home'),
     path('image/', image ,name='chat'),
     path('diet/', diet ,name='chat'),
