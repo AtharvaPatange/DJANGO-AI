@@ -468,18 +468,7 @@ import base64
 logger = logging.getLogger(__name__)
 
 # Define a predefined prompt for crop disease diagnosis
-PREDEFINED_PROMPT = ''' Use below data and answer the input prompt short answer exact to the question 
-Data:"
-State Emblem of India
-न्याय विभाग
-DEPARTMENT OF JUSTICE
-g20-logo
-Azadi ka Amrit Mahotsav
-Home
-About Us
-Administration of Justice
-National Mission
-hammerNo ImageHar Ghar Tiranga BannerBannerHSHS July 2024-Awardee-01…HSHS July 2024-Web banner DOJ-01NB DoJ webpage_01-05-2024Hamara Samman, Hamara SamvidhanHamara Samman, Hamara SamvidhanHamara Samman, Hamara SamvidhanHamara Samman, Hamara SamvidhanHamara Samman, Hamara Samvidhan95 Milestone-DOJ Website Post-01NJDG bannerDr. BR AMBdetailed information, you may refer to official resources or judicial websites."'''
+PREDEFINED_PROMPT = ''' You are a master chef and you are been proivded with some data anaylze it and genereate contemt accordingly '''
 
 @csrf_exempt
 def image(request):
