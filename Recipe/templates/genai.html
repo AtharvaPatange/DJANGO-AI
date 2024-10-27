@@ -1,0 +1,166 @@
+genai.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Gemini LLM Chat</title>
+    <style>
+        /* Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Page Styling */
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #3a8dff, #6b6eff);
+            color: #333;
+        }
+
+        /* Container */
+        .container {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+
+        /* Header */
+        h1 {
+            color: #3a8dff;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Form */
+        .prompt-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        input[type="text"] {
+            padding: 0.8rem;
+            font-size: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            transition: border 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #3a8dff;
+        }
+
+        /* Button Styling */
+        button {
+            background: #3a8dff;
+            color: #fff;
+            padding: 0.8rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Loading Spinner */
+        button.loading::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 1rem;
+            height: 1rem;
+            border: 3px solid #fff;
+            border-top: 3px solid transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            transform: translate(-50%, -50%);
+        }
+
+        button.loading {
+            color: transparent;
+            pointer-events: none;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Response */
+        #response {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: #f4f4f4;
+            border-radius: 5px;
+            border-left: 5px solid #3a8dff;
+            font-size: 1rem;
+            color: #333;
+            line-height: 1.5;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Gemini LLM Chat</h1>
+        <form id="promptForm" class="prompt-form">
+            <input type="text" id="prompt" name="prompt" placeholder="Enter your prompt here..." required>
+            <button type="submit" id="submitBtn">Get Response</button>
+        </form>
+        <div id="response"></div>
+    </div>
+
+    <script>
+        document.getElementById("promptForm").onsubmit = async function (e) {
+            e.preventDefault();
+            const prompt = document.getElementById("prompt").value;
+            const responseDiv = document.getElementById("response");
+            const submitBtn = document.getElementById("submitBtn");
+
+            // Clear previous response and hide it
+            responseDiv.innerText = "";
+            responseDiv.style.display = "none";
+
+            // Add loading class to button
+            submitBtn.classList.add("loading");
+
+            try {
+                const response = await fetch("", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "X-CSRFToken": "{{ csrf_token }}"
+                    },
+                    body: new URLSearchParams({ prompt: prompt })
+                });
+
+                const data = await response.json();
+                responseDiv.innerText = data.response || data.error;
+                responseDiv.style.display = "block";
+            } catch (error) {
+                responseDiv.innerText = "An error occurred. Please try again.";
+                responseDiv.style.display = "block";
+            }
+
+            // Remove loading class from button after response
+            submitBtn.classList.remove("loading");
+        }
+    </script>
+</body>
+</html>
